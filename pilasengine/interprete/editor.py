@@ -95,6 +95,12 @@ class WidgetEditor(QWidget, editor_ui.Ui_Editor):
 
                 # Draw the line number right justified at the y position of the
                 # line. 3 is a magic padding number. drawText(x, y, text).
+                x = -5 + self.width() - font_metrics.width(str(line_count)) - 3
+                y = round(position.y()) - contents_y + font_metrics.ascent()
+                painter.drawEllipse(
+                    x,
+                    y,
+                    10, 10)
                 painter.drawText(-5 + self.width() - font_metrics.width(str(line_count)) - 3,
                                 round(position.y()) - contents_y + font_metrics.ascent(),
                                 str(line_count))
