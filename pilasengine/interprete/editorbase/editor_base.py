@@ -9,6 +9,7 @@ import autocomplete
 import editor_con_deslizador
 import highlighter
 
+import pylint
 
 class EditorBase(autocomplete.CompletionTextEdit,
                  editor_con_deslizador.EditorConDeslizador):

@@ -15,7 +15,7 @@ import shutil
 
 from PyQt4.QtCore import Qt, QTimer
 from PyQt4.Qt import (QFrame, QWidget, QPainter,
-                      QSize, QVariant)
+                      QSize, QVariant, QThread)
 from PyQt4.QtGui import (QTextEdit, QTextCursor, QFileDialog,
                          QIcon, QMessageBox, QShortcut,
                          QInputDialog, QLineEdit, QErrorMessage,
@@ -127,6 +127,7 @@ class WidgetEditor(QWidget, editor_ui.Ui_Editor):
         self.lista_actores_como_strings = []
 
         self.editor = Editor(self, interpreter_locals, consola_lanas, ventana_interprete)
+        print self.editor, type(self.editor)
         self.editor.setFrameStyle(QFrame.NoFrame)
         self.editor.setAcceptRichText(False)
 
@@ -327,6 +328,19 @@ class Editor(editor_base.EditorBase):
         self.main = main
         self.nombre_de_archivo_sugerido = ""
         self.watcher = pilasengine.watcher.Watcher(None, self.cuando_cambia_archivo_de_forma_externa)
+        # Cada vez que se cambie el texto, se espera un tiempo prudencial para no sobrecargar
+        # el CPU con checkeos con cada pulsación
+        self.timer_checkeo_de_codigo = QTimer(self)
+        self.timer_checkeo_de_codigo.timeout.connect(self.checkear_codigo)
+        self.textChanged.connect(self.programar_checkeo_codigo_en_breve)
+
+    def programar_checkeo_codigo_en_breve(self, *args):
+        self.timer_checkeo_de_codigo.stop()
+        # TODO: Esto debe ser configurable en algún punto
+        self.timer_checkeo_de_codigo.start(500)
+
+    def checkear_codigo(self):
+        print "Checkeando código!"
 
     def crear_archivo_inicial(self):
         dirpath = tempfile.mkdtemp()
